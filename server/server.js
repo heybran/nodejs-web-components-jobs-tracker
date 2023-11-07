@@ -3,7 +3,6 @@ import cors from "cors";
 import cookirParser from "cookie-parser";
 import path from "path";
 import dotenv from "dotenv";
-import apiRoutes from "./shared/apiRoutes.json" assert { type: "json" };
 
 import { 
   handleAddJob, 
