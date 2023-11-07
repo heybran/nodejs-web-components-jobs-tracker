@@ -49,13 +49,13 @@ export default class JobsList extends HTMLElement {
         <tr data-job-id="${job.id}">
           <td>${job.website}</td>
           <td>${job.position}</td>
-          <td>${job.source}</td>
+          <td>${job.source ?? ''}</td>
           <td>${job.date_applied}</td>
           <td>${job.status}</td>
-          <td>${job.notes}</td>
+          <td>${job.notes ?? ''}</td>
           <td>
             <cc-button theme="primary" href="/jobs/edit?id=${job.id}">Edit</cc-button>
-            <cc-button theme="danger" href="/jobs/delete?id=${job.id}">Delete</cc-button>
+            <cc-button theme="danger" href="/jobs/delete?id=${job.id}&website=${job.website}">Delete</cc-button>
           </td>
         </tr>
       `;

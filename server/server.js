@@ -5,7 +5,13 @@ import path from "path";
 import dotenv from "dotenv";
 import apiRoutes from "./shared/apiRoutes.json" assert { type: "json" };
 
-import { handleAddJob, handleListJobs, handleListSingleJob } from "./controllers/jobs.controller.js";
+import { 
+  handleAddJob, 
+  handleListJobs, 
+  handleListSingleJob,
+  handleDeleteJob,
+  handleUpdateJob,
+ } from "./controllers/jobs.controller.js";
 
 dotenv.config();
 const jwtSecret = process.env.JWT_SECRET;
@@ -40,6 +46,8 @@ app.get(/^((?!\/api\/).)*$/, async (req, res) => {
 app.get('/api/jobs', handleListJobs);
 app.get('/api/jobs/:id', handleListSingleJob);
 app.post('/api/jobs', handleAddJob);
+app.post('/api/jobs/delete', handleDeleteJob);
+app.post('/api/jobs/update/:id', handleUpdateJob);
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));

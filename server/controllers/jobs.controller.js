@@ -69,11 +69,33 @@ export const handleListSingleJob = async (req, res) => {
     ..._option,
   };
 
-  console.log(req.params.id);
-
   fetch(XATA_DB_BASE_URI + `/data/${req.params.id}`, options)
     .then(response => response.json())
     .then(response => res.json(response))
     .catch(err => console.error(err));
 }
 
+export const handleDeleteJob = async (req, res) => {
+  const options = {
+    method: 'DELETE',
+    ..._option,
+  };
+
+  fetch(XATA_DB_BASE_URI + `/data/${req.body.id}?columns=id`, options)
+    .then(response => response.json())
+    .then(response => res.json(response))
+    .catch(err => console.error(err));
+}
+
+export const handleUpdateJob = async (req, res) => {
+  const options = {
+    method: 'PATCH',
+    ..._option,
+    body: JSON.stringify(req.body)
+  };
+
+  fetch(XATA_DB_BASE_URI + `/data/${req.params.id}?columns=id`, options)
+    .then(response => response.json())
+    .then(response => res.json(response))
+    .catch(err => console.error(err));
+}

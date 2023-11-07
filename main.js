@@ -26,6 +26,12 @@ ROUTER.add('/jobs/edit', async ({ route, params }) => {
   main.appendChild(editJob);
 });
 
+ROUTER.add('/jobs/delete', async ({ route, params }) => {
+  await import("./src/routes/delete-job.js").catch(console.error);
+  const deleteJob = document.createElement('delete-job');
+  main.appendChild(deleteJob);
+});
+
 ROUTER.add('404', () => {
   alert('page not found');
   ROUTER.redirect('/');

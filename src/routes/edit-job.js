@@ -27,7 +27,7 @@ export default class EditJob extends HTMLElement {
           <cc-form-layout>
             <cc-text-field label="Website" name="website" required value="${job.website}"></cc-text-field>
             <cc-text-field label="Position" name="position" required value="${job.position}"></cc-text-field>
-            <cc-text-field label="Source" name="source" value="${job.source}"></cc-text-field>
+            <cc-text-field label="Source" name="source" value="${job.source ?? ''}"></cc-text-field>
             <cc-date-picker label="Date Applied" required name="date-applied" value="${job['date_applied']}"></cc-date-picker>
             <cc-select name="status" label="Status" colspan="2">
               <cc-option value="pending" aria-selected="${job.status === 'pending' ? 'true' : ''}">Pending</cc-option>
@@ -37,36 +37,35 @@ export default class EditJob extends HTMLElement {
             <cc-textarea label="Nodes" name="notes" colspan="2"></cc-textarea>
           </cc-form-layout>
         </form>
-        <cc-button type="submit" theme="primary" slot="footer-actions-right" form="edit-job-form">Submit</cc-button>
+        <cc-button theme="primary" slot="footer-actions-right"
+          onclick="this.getRootNode().host.updateJob('${id}', this)"
+        >Submit</cc-button>
       </cc-dialog>
     `;
-    this.shadowRoot.querySelector('cc-textarea').value = job.notes;
+    this.shadowRoot.querySelector('cc-textarea').value = job.notes ?? '';
     this.shadowRoot.querySelector('cc-dialog').show();
   }
 
   /**
-   * @param {SubmitEvent} event
+   * @param {string} id
+   * @param {HTMLElement} submitButton
    */
-  editJob(event) {
-    event.preventDefault();
-    
-    const form = event.target;
-    const formData = new FormData(form);
-    const formDataObject = {};
-  
-    for (let [key, value] of formData.entries()) {
-      formDataObject[key] = value;
-    }
-
-    const submitButton = this.shadowRoot?.querySelector('[type="submit"]');
+  updateJob(id, submitButton) {
     submitButton?.setAttribute('loading', '');
   
-    fetch('/api/jobs', {
+    fetch(`/api/jobs/update/${id}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(formDataObject)
+      body: JSON.stringify({
+        website: this.shadowRoot?.querySelector('[name="website"]').value,
+        position: this.shadowRoot?.querySelector('[name="position"]').value,
+        source: this.shadowRoot?.querySelector('[name="source"]').value,
+        date_applied: this.shadowRoot?.querySelector('[name="date-applied"]').value,
+        status: this.shadowRoot?.querySelector('[name="status"]').value,
+        notes: this.shadowRoot?.querySelector('[name="notes"]').value,
+      })
     })
     .then(res => {
       // Handle the response from the server
