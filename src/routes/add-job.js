@@ -56,7 +56,7 @@ export default class AddJob extends HTMLElement {
     const submitButton = this.shadowRoot?.querySelector('[type="submit"]');
     submitButton?.setAttribute('loading', '');
   
-    fetch('/api/jobs/add', {
+    fetch('/api/jobs', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -66,7 +66,7 @@ export default class AddJob extends HTMLElement {
     .then(res => {
       // Handle the response from the server
       if (res.ok) {
-        ROUTER.redirect('/companies');
+        ROUTER.redirect('/jobs');
       }
     })
     .catch(error => {

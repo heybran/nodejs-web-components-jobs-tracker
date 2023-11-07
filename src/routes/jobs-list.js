@@ -54,8 +54,8 @@ export default class JobsList extends HTMLElement {
           <td>${job.status}</td>
           <td>${job.notes}</td>
           <td>
-            <cc-button theme="primary">Edit</cc-button>
-            <cc-button theme="danger">Delete</cc-button>
+            <cc-button theme="primary" href="/jobs/edit?id=${job.id}">Edit</cc-button>
+            <cc-button theme="danger" href="/jobs/delete?id=${job.id}">Delete</cc-button>
           </td>
         </tr>
       `;
