@@ -1,13 +1,3 @@
-import "cucumber-components/src/components/form-layout/form-layout.js";
-import "cucumber-components/src/components/text-field/text-field.js";
-import "cucumber-components/src/components/date-picker/date-picker.js";
-import "cucumber-components/src/components/option/option.js";
-import "cucumber-components/src/components/select/select.js";
-import "cucumber-components/src/components/textarea/textarea.js";
-import "cucumber-components/src/components/checkbox/checkbox.js";
-import "cucumber-components/src/components/button/button.js";
-import "cucumber-components/src/components/dialog/dialog.js";
-
 export default class EditJob extends HTMLElement {
   constructor() {
     super();

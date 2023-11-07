@@ -1,7 +1,3 @@
-import "cucumber-components/src/components/side-nav/side-nav.js";
-import "cucumber-components/src/components/side-nav-item/side-nav-item.js";
-import "cucumber-components/src/components/icon/icon.js";
-
 export default class Header extends HTMLElement {
   constructor() {
     super();

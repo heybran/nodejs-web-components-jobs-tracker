@@ -1,5 +1,3 @@
-import "cucumber-components/src/components/button/button.js";
-
 export default class JobsList extends HTMLElement {
   constructor() {
     super();
@@ -19,6 +17,13 @@ export default class JobsList extends HTMLElement {
         tr > td {
           border-top: 1px solid #e6e6e6;
           padding-block: 0.5rem;
+        }
+
+        tr > td:nth-child(6) {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 10em;
         }
 
         tr > th {
