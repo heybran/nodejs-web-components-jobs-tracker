@@ -1,0 +1,35 @@
+{
+  "name": "nodejs-web-components-jobs-tracker",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A jobs tracker built vanilla Web Components on frontend and Node.js as backend.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/heybran/nodejs-web-components-jobs-tracker.git"
+  },
+  "keywords": [
+    "JavaScript",
+    "Web",
+    "Components",
+    "nodejs"
+  ],
+  "author": "Brandon Zhang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/heybran/nodejs-web-components-jobs-tracker/issues"
+  },
+  "homepage": "https://github.com/heybran/nodejs-web-components-jobs-tracker#readme",
+  "dependencies": {
+    "breeze-router": "^0.1.0",
+    "cucumber-components": "file:/Users/brandon/codes/breeze-components"
+  },
+  "devDependencies": {
+    "vite": "^4.4.6"
+  }
+}
