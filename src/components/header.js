@@ -37,11 +37,11 @@ export default class Header extends HTMLElement {
         <cc-side-nav horizontal>
           <cc-side-nav-item path="/">
             <cc-icon icon="plus-lg" slot="prefix"></cc-icon>
-            Add Company
+            Add a Job
           </cc-side-nav-item>
-          <cc-side-nav-item path="/companies">
+          <cc-side-nav-item path="/jobs">
             <cc-icon icon="table" slot="prefix"></cc-icon>
-            Companies
+            Jobs
           </cc-side-nav-item>
           <style>
             cc-side-nav-item {

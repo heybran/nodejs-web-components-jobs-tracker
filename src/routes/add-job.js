@@ -44,7 +44,7 @@ export default class AddJob extends HTMLElement {
    */
   addJob(event) {
     event.preventDefault();
-  
+    
     const form = event.target;
     const formData = new FormData(form);
     const formDataObject = {};
@@ -52,6 +52,9 @@ export default class AddJob extends HTMLElement {
     for (let [key, value] of formData.entries()) {
       formDataObject[key] = value;
     }
+
+    const submitButton = this.shadowRoot?.querySelector('[type="submit"]');
+    submitButton?.setAttribute('loading', '');
   
     fetch('/api/jobs/add', {
       method: 'POST',
@@ -63,11 +66,13 @@ export default class AddJob extends HTMLElement {
     .then(res => {
       // Handle the response from the server
       if (res.ok) {
-        return Router.redirect('/companies');
+        ROUTER.redirect('/companies');
       }
     })
     .catch(error => {
       // Handle any errors that occur during the request
+    }).finally(() => {
+      submitButton?.removeAttribute('loading');
     });
   }
 }
