@@ -25,6 +25,56 @@
       <cc-spinner style="--size: 2em"></cc-spinner>
     </template>
     <template path="/">
+      <div id="signin-form-wrapper">
+        <form method="post" onsubmit="signin(event);" id="signin-form">
+          <h1>Sign in</h1>
+          <p>
+            This project is supposed to run locally by you to track your job applications. <br>
+            So, I didn't wire up the whole signup/signin workflow. <br>
+            You can signin with example username: <b>heybran</b> and password: <b>123</b>.
+          </p>
+          <cc-text-field label="Username" name="username" required></cc-text-field>
+          <cc-password-field label="Password" name="password" required></cc-password-field>
+          <cc-button type="submit" theme="primary" colspan="2" style="width: 100%; margin-top: 1rem;">Submit</cc-button>
+        </form>
+      </div>
+      <script type="module">
+        window.signin = function(event) {
+          event.preventDefault();
+        
+          const form = event.target;
+          const formData = new FormData(form);
+          const formDataObject = {};
+        
+          for (let [key, value] of formData.entries()) {
+            formDataObject[key] = value;
+          }
+
+          const submitButton = form.querySelector('[type="submit"]');
+          submitButton?.setAttribute('loading', '');
+      
+          fetch('/api/jobs', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formDataObject)
+          })
+          .then(res => {
+            // Handle the response from the server
+            if (res.ok) {
+              ROUTER.redirect('/jobs');
+            }
+          })
+          .catch(error => {
+            // Handle any errors that occur during the request
+          }).finally(() => {
+            submitButton?.removeAttribute('loading');
+          });
+        }
+      </script>
+    </template>
+    <template path="/jobs/add">
       <form method="post" onsubmit="addJob(event);">
         <cc-form-layout>
           <cc-text-field label="Website" name="website" required></cc-text-field>

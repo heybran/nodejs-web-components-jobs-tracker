@@ -22,6 +22,7 @@ main {
 }
 
 form {
-  max-width: 65ch;
+  width: 65ch;
+  max-width: 100%;
   margin-inline: auto;
 }

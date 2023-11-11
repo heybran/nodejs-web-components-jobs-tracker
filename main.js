@@ -15,6 +15,7 @@ import "cucumber-components/src/components/checkbox/checkbox.js";
 import "cucumber-components/src/components/dialog/dialog.js";
 import "cucumber-components/src/components/button/button.js";
 import "cucumber-components/src/components/spinner/spinner.js";
+import "cucumber-components/src/components/password-field/password-field.js";
 
 import "./src/controllers/job.js";
 

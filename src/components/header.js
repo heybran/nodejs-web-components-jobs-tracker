@@ -31,7 +31,7 @@ export default class Header extends HTMLElement {
           <h1>Jobs Tracker</h1>
         </a>
         <cc-side-nav horizontal>
-          <cc-side-nav-item path="/">
+          <cc-side-nav-item path="/jobs/add">
             <cc-icon icon="plus-lg" slot="prefix"></cc-icon>
             Add a Job
           </cc-side-nav-item>
