@@ -8,10 +8,142 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Merriweather+Sans:300,500,regular,|Poppins:700,regular,|Poppins:100,200,300,400,500,600,700,800,900">
     <title>Jobs Tracker</title>
+    <style>
+      cc-spinner {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+      :not(:defined) {
+        opacity: 0;
+      }
+    </style>
   </head>
   <body>
+    <template id="spinner">
+      <cc-spinner style="--size: 2em"></cc-spinner>
+    </template>
+    <template path="/">
+      <form method="post" onsubmit="this.getRootNode().host.addJob(event);">
+        <cc-form-layout>
+          <cc-text-field label="Website" name="website" required></cc-text-field>
+          <cc-text-field label="Position" name="position" required></cc-text-field>
+          <cc-text-field label="Source" name="source"></cc-text-field>
+          <cc-date-picker label="Date Applied" required name="date-applied"></cc-date-picker>
+          <cc-select name="status" label="Status" colspan="2">
+            <cc-option value="pending" aria-selected="true">Pending</cc-option>
+            <cc-option value="rejected">Rejected</cc-option>
+            <cc-option value="not-applied">Not Applied</cc-option>
+          </cc-select>
+          <cc-textarea label="Nodes" name="notes" colspan="2"></cc-textarea>
+          <cc-button type="submit" theme="primary">Submit</cc-button>
+        </cc-form-layout>
+      </form>
+    </template>
+    <template path="/jobs" async-render>
+      <style>
+        table {
+          width: 100%;
+          text-align: left;
+        }
+
+        tr > td {
+          border-top: 1px solid #e6e6e6;
+          padding-block: 0.5rem;
+        }
+
+        tr > td:nth-child(6) {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 10em;
+        }
+
+        tr > th {
+          padding-block: 0.5rem;
+        }
+      </style>
+      <table>
+        <tr>
+          <th>Website</th>
+          <th>Position</th>
+          <th>Source</th>
+          <th>Date Applied</th>
+          <th>Status</th>
+          <th>Notes</th>
+          <th>Actions</th>
+        </tr>
+        <tbody render-target>
+        </tbody>
+      </table>
+      <script type="module">
+        fetch('/api/jobs').then((res) => res.json()).then((jobs) => {
+          const container = document.querySelector('tbody[render-target]');
+          container.innerHTML = renderTable(jobs);
+          window.dispatchEvent(new CustomEvent('dataFetched'));
+        });
+        function renderTable(jobs) {
+          let html = '';
+          jobs.forEach(job => {
+            html += `
+              <tr data-job-id="${job.id}">
+                <td>${job.website}</td>
+                <td>${job.position}</td>
+                <td>${job.source ?? ''}</td>
+                <td>${job.date_applied}</td>
+                <td>${job.status}</td>
+                <td>${job.notes ?? ''}</td>
+                <td>
+                  <cc-button theme="primary" href="/jobs/edit?id=${job.id}">Edit</cc-button>
+                  <cc-button theme="danger" href="/jobs/delete?id=${job.id}&website=${job.website}">Delete</cc-button>
+                </td>
+              </tr>
+            `;
+          });
+
+          return html;
+        }
+      </script>
+    </template>
+    <template path="/jobs/edit" async-render mode="modal">
+      <cc-dialog>
+        <form method="post" onsubmit="this.getRootNode().host.EditJob(event);" id="edit-job-form">
+          <cc-form-layout></cc-form-layout>
+        </form>
+        <cc-button theme="primary" slot="footer-actions-right"
+          onclick="this.getRootNode().host.updateJob('${id}', this)"
+        >Submit</cc-button>
+      </cc-dialog>
+      <script type="module">
+        let search = new URLSearchParams(location.search);
+        let id = search.get("id");
+        fetch(`/api/jobs/${id}`).then(res => res.json()).then(job => {
+          const form = document.forms['edit-job-form'];
+          const layout = form.querySelector('cc-form-layout');
+          renderFormElements(job, layout);
+          window.dispatchEvent(new CustomEvent('dataFetched'));
+          form.parentElement.show();
+        });
+
+        function renderFormElements(job, layout) {
+          layout.innerHTML = `
+            <cc-text-field label="Website" name="website" required value="${job.website ?? ''}"></cc-text-field>
+            <cc-text-field label="Position" name="position" required value="${job.position ?? ''}"></cc-text-field>
+            <cc-text-field label="Source" name="source" value="${job.source ?? ''}"></cc-text-field>
+            <cc-date-picker label="Date Applied" required name="date-applied" value="${job['date-applied'] ?? ''}"></cc-date-picker>
+            <cc-select name="status" label="Status" colspan="2">
+              <cc-option value="pending" aria-selected="${job.status === 'pending' ? 'true' : ''}">Pending</cc-option>
+              <cc-option value="rejected" aria-selected="${job.status === 'rejected' ? 'true' : ''}">Rejected</cc-option>
+              <cc-option value="not-applied" aria-selected="${job.status === 'not-applied' ? 'true' : ''}">Not Applied</cc-option>
+            </cc-select>
+            <cc-textarea label="Nodes" name="notes" colspan="2"></cc-textarea>
+          `;
+        }
+      </script>
+    </template>
     <cc-header></cc-header>
-    <main id="main"></main>
+    <main id="main" router-outlet router-spinner="spinner"></main>
     <cc-footer></cc-footer>
     <script type="module" src="/main.js"></script>
   </body>
