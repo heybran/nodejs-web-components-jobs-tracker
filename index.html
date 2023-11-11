@@ -25,7 +25,7 @@
       <cc-spinner style="--size: 2em"></cc-spinner>
     </template>
     <template path="/">
-      <form method="post" onsubmit="this.getRootNode().host.addJob(event);">
+      <form method="post" onsubmit="addJob(event);">
         <cc-form-layout>
           <cc-text-field label="Website" name="website" required></cc-text-field>
           <cc-text-field label="Position" name="position" required></cc-text-field>
@@ -40,6 +40,41 @@
           <cc-button type="submit" theme="primary">Submit</cc-button>
         </cc-form-layout>
       </form>
+      <script type="module">
+        window.addJob = function(event) {
+          event.preventDefault();
+        
+          const form = event.target;
+          const formData = new FormData(form);
+          const formDataObject = {};
+        
+          for (let [key, value] of formData.entries()) {
+            formDataObject[key] = value;
+          }
+
+          const submitButton = form.querySelector('[type="submit"]');
+          submitButton?.setAttribute('loading', '');
+      
+          fetch('/api/jobs', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formDataObject)
+          })
+          .then(res => {
+            // Handle the response from the server
+            if (res.ok) {
+              ROUTER.redirect('/jobs');
+            }
+          })
+          .catch(error => {
+            // Handle any errors that occur during the request
+          }).finally(() => {
+            submitButton?.removeAttribute('loading');
+          });
+        }
+      </script>
     </template>
     <template path="/jobs" async-render>
       <style>
@@ -106,24 +141,19 @@
         }
       </script>
     </template>
-    <template path="/jobs/edit" async-render mode="modal">
-      <cc-dialog>
-        <form method="post" onsubmit="this.getRootNode().host.EditJob(event);" id="edit-job-form">
-          <cc-form-layout></cc-form-layout>
-        </form>
-        <cc-button theme="primary" slot="footer-actions-right"
-          onclick="this.getRootNode().host.updateJob('${id}', this)"
-        >Submit</cc-button>
-      </cc-dialog>
+    <template path="/jobs/edit" async-render>
+      <form method="post" onsubmit="updateJob(event);" id="edit-job-form">
+        <cc-form-layout></cc-form-layout>
+        <cc-button theme="primary" type="submit">Confirm</cc-button>
+      </form>
       <script type="module">
         let search = new URLSearchParams(location.search);
         let id = search.get("id");
+        const form = document.forms['edit-job-form'];
+        const layout = form.querySelector('cc-form-layout');
         fetch(`/api/jobs/${id}`).then(res => res.json()).then(job => {
-          const form = document.forms['edit-job-form'];
-          const layout = form.querySelector('cc-form-layout');
           renderFormElements(job, layout);
           window.dispatchEvent(new CustomEvent('dataFetched'));
-          form.parentElement.show();
         });
 
         function renderFormElements(job, layout) {
@@ -131,14 +161,93 @@
             <cc-text-field label="Website" name="website" required value="${job.website ?? ''}"></cc-text-field>
             <cc-text-field label="Position" name="position" required value="${job.position ?? ''}"></cc-text-field>
             <cc-text-field label="Source" name="source" value="${job.source ?? ''}"></cc-text-field>
-            <cc-date-picker label="Date Applied" required name="date-applied" value="${job['date-applied'] ?? ''}"></cc-date-picker>
+            <cc-date-picker label="Date Applied" required name="date-applied" value="${job.date_applied}"></cc-date-picker>
             <cc-select name="status" label="Status" colspan="2">
-              <cc-option value="pending" aria-selected="${job.status === 'pending' ? 'true' : ''}">Pending</cc-option>
-              <cc-option value="rejected" aria-selected="${job.status === 'rejected' ? 'true' : ''}">Rejected</cc-option>
-              <cc-option value="not-applied" aria-selected="${job.status === 'not-applied' ? 'true' : ''}">Not Applied</cc-option>
+              <cc-option value="pending" aria-selected="${job.status === 'pending' ? 'true' : 'false'}">Pending</cc-option>
+              <cc-option value="rejected" aria-selected="${job.status === 'rejected' ? 'true' : 'false'}">Rejected</cc-option>
+              <cc-option value="not-applied" aria-selected="${job.status === 'not-applied' ? 'true' : 'false'}">Not Applied</cc-option>
             </cc-select>
             <cc-textarea label="Nodes" name="notes" colspan="2"></cc-textarea>
           `;
+
+          layout.querySelector('cc-textarea').value = job.notes;
+        }
+
+        /**
+         * @param {string} id
+         * @param {HTMLElement} submitButton
+         */
+        window.updateJob = function(event) {
+          event.preventDefault();
+          const submitButton = form.querySelector('cc-button');
+          submitButton?.setAttribute('loading', '');
+        
+          fetch(`/api/jobs/update/${id}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              website: form.querySelector('[name="website"]').value,
+              position: form.querySelector('[name="position"]').value,
+              source: form.querySelector('[name="source"]').value,
+              date_applied: form.querySelector('[name="date-applied"]').value,
+              status: form.querySelector('[name="status"]').value,
+              notes: form.querySelector('[name="notes"]').value,
+            })
+          })
+          .then(res => {
+            // Handle the response from the server
+            if (res.ok) {
+              ROUTER.redirect('/jobs');
+            }
+          })
+          .catch(error => {
+            // Handle any errors that occur during the request
+          }).finally(() => {
+            submitButton?.removeAttribute('loading');
+          });
+        }
+      </script>
+    </template>
+    <template path="/jobs/delete">
+      <form method="post" id="delete-job-form">
+        <h2></h2>
+        <cc-button theme="primary" onclick="deleteJob(this);">Confirm</cc-button>
+      </form>
+      <script type="module">
+        let search = new URLSearchParams(location.search);
+        let id = search.get("id");
+        let website = search.get('website');
+        document.forms['delete-job-form'].querySelector('h2').textContent = `
+          You are about to delete job of ${website}.
+        `;
+        document.forms['delete-job-form'].setAttribute('data-job-id', id);
+
+        /**
+         * @param {string} id
+         */
+        window.deleteJob = function(button) {
+          button?.setAttribute('loading', '');
+        
+          fetch('/api/jobs/delete', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id })
+          })
+          .then(res => {
+            // Handle the response from the server
+            if (res.ok) {
+              ROUTER.redirect('/jobs');
+            }
+          })
+          .catch(error => {
+            // Handle any errors that occur during the request
+          }).finally(() => {
+            button?.removeAttribute('loading');
+          });
         }
       </script>
     </template>
