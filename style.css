@@ -20,3 +20,9 @@ body {
 main {
   padding: 2rem;
 }
+
+form {
+  width: 65ch;
+  max-width: 100%;
+  margin-inline: auto;
+}

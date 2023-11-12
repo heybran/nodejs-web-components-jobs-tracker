@@ -1,6 +1,7 @@
 import "./style.css";
-import "./src/index.js";
-import BreezeRouter from "breeze-router";
+import "./src/components/header.js";
+import "./src/components/footer.js";
+import CucumberRouter from "../cucumber-router/src/index.js";
 import "cucumber-components/src/components/side-nav/side-nav.js";
 import "cucumber-components/src/components/side-nav-item/side-nav-item.js";
 import "cucumber-components/src/components/icon/icon.js";
@@ -13,40 +14,35 @@ import "cucumber-components/src/components/textarea/textarea.js";
 import "cucumber-components/src/components/checkbox/checkbox.js";
 import "cucumber-components/src/components/dialog/dialog.js";
 import "cucumber-components/src/components/button/button.js";
+import "cucumber-components/src/components/spinner/spinner.js";
+import "cucumber-components/src/components/password-field/password-field.js";
 
-const ROUTER = new BreezeRouter();
+import "./src/controllers/job.js";
+
+const outlet = document.querySelector('[router-outlet]');
+const ROUTER = new CucumberRouter(outlet);
+ROUTER.addProtectedRouteGuard(async () => {
+  const res = await fetch('/api/get-session');
+  const data = await res.json();
+  return data.isLoggedin;
+}, () => {
+  const template = document.createElement('template');
+  template.innerHTML = `
+    <cc-dialog label="You need to signin">
+      Click ok will redirect you to home page to signin.
+      <cc-button 
+        theme="primary" 
+        onclick="this.parentElement.close();"
+        href="/signin"
+        slot="footer-actions-right"
+        style="width: 5em;"
+      >Ok</cc-button>
+    </cc-dialog>
+  `;
+  const dialog = template.content.cloneNode(true);
+  document.body.appendChild(dialog);
+  document.body.lastElementChild.show();
+});
 window.ROUTER = ROUTER;
-
-const main = document.querySelector('#main');
-
-ROUTER.add('/', async ({ route, params }) => {
-  await import("./src/routes/add-job.js").catch(console.error);
-  main.innerHTML = `<add-job></add-job>`;
-});
-
-ROUTER.add('/jobs', async ({ route, params }) => {
-  await import("./src/routes/jobs-list.js").catch(console.error);
-  main.innerHTML = `<jobs-list></jobs-list>`;
-  // https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/getName
-  // not supported yet
-  // console.log(customElements.getName(signup));
-});
-
-ROUTER.add('/jobs/edit', async ({ route, params }) => {
-  await import("./src/routes/edit-job.js").catch(console.error);
-  const editJob = document.createElement('edit-job');
-  main.appendChild(editJob);
-});
-
-ROUTER.add('/jobs/delete', async ({ route, params }) => {
-  await import("./src/routes/delete-job.js").catch(console.error);
-  const deleteJob = document.createElement('delete-job');
-  main.appendChild(deleteJob);
-});
-
-ROUTER.add('404', () => {
-  alert('page not found');
-  ROUTER.redirect('/');
-});
 
 ROUTER.start();

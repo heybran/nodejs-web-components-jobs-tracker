@@ -3,6 +3,7 @@ import cors from "cors";
 import cookirParser from "cookie-parser";
 import path from "path";
 import dotenv from "dotenv";
+import session from "express-session";
 
 import { 
   handleAddJob, 
@@ -29,6 +30,20 @@ app.use(
   }),
 );
 
+const sess = {
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: true,
+  // cookie: { secure: false }
+}
+
+// if (app.get('env') === 'production') {
+//   app.set('trust proxy', 1) // trust first proxy
+//   sess.cookie.secure = true // serve secure cookies
+// }
+
+app.use(session(sess));
+
 app.use(express.json());
 
 app.use(cookirParser(jwtSecret));
@@ -42,11 +57,38 @@ app.get(/^((?!\/api\/).)*$/, async (req, res) => {
   res.sendFile(indexPath);
 });
 
+app.get('/api/get-session', (req, res) => {
+  const isLoggedin = req.session.user;
+  if (isLoggedin) {
+    res.json({ isLoggedin: true });
+  } else {
+    res.json({ isLoggedin: false });
+  }
+});
+
+app.get('/api/set-session', (req, res) => {
+  const { username, password} = req.body;
+  console.log(username, password);
+});
+
 app.get('/api/jobs', handleListJobs);
 app.get('/api/jobs/:id', handleListSingleJob);
 app.post('/api/jobs', handleAddJob);
 app.post('/api/jobs/delete', handleDeleteJob);
 app.post('/api/jobs/update/:id', handleUpdateJob);
+app.post('/api/signin', (req, res) => {
+  const { username, password } = req.body;
+  if (username === 'heybran' && password === '123') {
+    req.session.user = {
+      username,
+    }
+    res.json({ message: 'Yay, you\'re logged in. '});
+  } else {
+    res.status(401).json({
+      message: 'Username or password is wrong'
+    });
+  }
+});
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
