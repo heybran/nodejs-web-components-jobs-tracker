@@ -21,6 +21,28 @@ import "./src/controllers/job.js";
 
 const outlet = document.querySelector('[router-outlet]');
 const ROUTER = new CucumberRouter(outlet);
+ROUTER.addProtectedRouteGuard(async () => {
+  const res = await fetch('/api/get-session');
+  const data = await res.json();
+  return data.isLoggedin;
+}, () => {
+  const template = document.createElement('template');
+  template.innerHTML = `
+    <cc-dialog label="You need to signin">
+      Click ok will redirect you to home page to signin.
+      <cc-button 
+        theme="primary" 
+        onclick="this.parentElement.close();"
+        href="/signin"
+        slot="footer-actions-right"
+        style="width: 5em;"
+      >Ok</cc-button>
+    </cc-dialog>
+  `;
+  const dialog = template.content.cloneNode(true);
+  document.body.appendChild(dialog);
+  document.body.lastElementChild.show();
+});
 window.ROUTER = ROUTER;
 
 ROUTER.start();

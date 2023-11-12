@@ -24,7 +24,7 @@
     <template id="spinner">
       <cc-spinner style="--size: 2em"></cc-spinner>
     </template>
-    <template path="/">
+    <template path="/signin">
       <div id="signin-form-wrapper">
         <form method="post" onsubmit="signin(event);" id="signin-form">
           <h1>Sign in</h1>
@@ -41,29 +41,33 @@
       <script type="module">
         window.signin = function(event) {
           event.preventDefault();
-        
           const form = event.target;
           const formData = new FormData(form);
-          const formDataObject = {};
-        
-          for (let [key, value] of formData.entries()) {
-            formDataObject[key] = value;
-          }
-
+          const error = form.querySelector('.error');
+          if (error) error.remove();
           const submitButton = form.querySelector('[type="submit"]');
           submitButton?.setAttribute('loading', '');
       
-          fetch('/api/jobs', {
+          fetch('/api/signin', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify(formDataObject)
+            body: JSON.stringify({
+              username: formData.get('username'),
+              password: formData.get('password'),
+            })
           })
           .then(res => {
             // Handle the response from the server
             if (res.ok) {
               ROUTER.redirect('/jobs');
+            } else {
+              const p = document.createElement('p');
+              p.style.color = 'red';
+              p.className = 'error';
+              p.textContent = 'Incorrect username or password.';
+              form.appendChild(p);
             }
           })
           .catch(error => {
@@ -74,7 +78,7 @@
         }
       </script>
     </template>
-    <template path="/jobs/add">
+    <template path="/" protected-route redirect="/signin">
       <form method="post" onsubmit="addJob(event);">
         <cc-form-layout>
           <cc-text-field label="Website" name="website" required></cc-text-field>
@@ -126,7 +130,7 @@
         }
       </script>
     </template>
-    <template path="/jobs" async-render>
+    <template path="/jobs" async-render protected-route>
       <style>
         table {
           width: 100%;
@@ -191,7 +195,7 @@
         }
       </script>
     </template>
-    <template path="/jobs/edit" async-render>
+    <template path="/jobs/edit" async-render protected-route>
       <form method="post" onsubmit="updateJob(event);" id="edit-job-form">
         <cc-form-layout></cc-form-layout>
         <cc-button theme="primary" type="submit">Confirm</cc-button>
@@ -260,7 +264,7 @@
         }
       </script>
     </template>
-    <template path="/jobs/delete">
+    <template path="/jobs/delete" protected-route>
       <form method="post" id="delete-job-form">
         <h2></h2>
         <cc-button theme="primary" onclick="deleteJob(this);">Confirm</cc-button>
