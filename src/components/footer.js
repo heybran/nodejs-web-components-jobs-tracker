@@ -8,15 +8,19 @@ export default class Footer extends HTMLElement {
     this.shadowRoot.innerHTML = `
       <style>
         footer {
-          text-align: center;
-          padding: 1rem 2rem;
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: center;
+          gap: .5rem;
         }
         a {
           color: inherit;
         }
       </style>
       <footer>
-        Crafted by <a href="https://github.com/heybran">@heybran</a>
+        <p>Crafted by <a href="https://github.com/heybran">@heybran.</a></p>
+        <p>Logo icon is downloaded from <a href="https://icons8.com/">Icons8</a>.</p>
       </footer>
     `; 
   }
