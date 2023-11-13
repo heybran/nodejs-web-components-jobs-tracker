@@ -4,6 +4,7 @@
 
 html {
   scroll-behavior: smooth;
+  --primary-color: #0570c5;
 }
 
 body {
@@ -12,7 +13,6 @@ body {
   min-height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr auto;
-
   max-width: 1440px;
   margin-inline: auto;
 }

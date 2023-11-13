@@ -14,13 +14,18 @@ export default class Header extends HTMLElement {
         header {
           display: flex;
           align-items: center;
-          justify-content: space-between;
+          justify-content: flex-start;
+          gap: 2rem;
           padding: 1rem 2rem;
           border-bottom: 1px solid #e6e6e6;
         }
         a {
           text-decoration: none;
           color: inherit;
+          width: 12em;
+        }
+        img {
+          width: 100%;
         }
         h1 {
           margin: 0;
@@ -28,7 +33,7 @@ export default class Header extends HTMLElement {
       </style>
       <header>
         <a href="/">
-          <h1>Jobs Tracker</h1>
+          <img src="/career-tracker.svg" alt="">
         </a>
         <cc-side-nav horizontal>
           <cc-side-nav-item path="/">
