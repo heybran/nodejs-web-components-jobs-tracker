@@ -1,8 +1,8 @@
-import dotenv from "dotenv";
+import dotenv from "npm:dotenv";
 dotenv.config();
 
-const XATA_API_KEY = process.env.XATA_API_KEY;
-const XATA_DB_BASE_URI = process.env.XATA_DB_BASE_URI;
+const XATA_API_KEY = Deno.env.get('XATA_API_KEY');
+const XATA_DB_BASE_URI = Deno.env.get('XATA_DB_BASE_URI');
 
 const _option = {
   headers: {

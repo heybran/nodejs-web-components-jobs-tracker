@@ -1,9 +1,9 @@
-import express from "express";
-import cors from "cors";
-import cookirParser from "cookie-parser";
-import path from "path";
-import dotenv from "dotenv";
-import session from "express-session";
+import express from "npm:express";
+import cors from "npm:cors";
+import cookirParser from "npm:cookie-parser";
+import path from "npm:path";
+import dotenv from "npm:dotenv";
+import session from "npm:express-session";
 
 import { 
   handleAddJob, 
@@ -14,7 +14,7 @@ import {
  } from "./controllers/jobs.controller.js";
 
 dotenv.config();
-const jwtSecret = process.env.JWT_SECRET;
+// const jwtSecret = process.env.JWT_SECRET;
 const app = express();
 
 app.use(
@@ -31,7 +31,7 @@ app.use(
 );
 
 const sess = {
-  secret: process.env.SESSION_SECRET,
+  secret: Deno.env.get('SESSION_SECRET'),
   resave: false,
   saveUninitialized: true,
   // cookie: { secure: false }
@@ -46,14 +46,14 @@ app.use(session(sess));
 
 app.use(express.json());
 
-app.use(cookirParser(jwtSecret));
+// app.use(cookirParser(jwtSecret));
 
 // Serve static files from the ./build folder
 app.use(express.static("build"));
 
 // Server index.html for all non-api routes
 app.get(/^((?!\/api\/).)*$/, async (req, res) => {
-  const indexPath = path.resolve(process.cwd(), "build", "index.html");
+  const indexPath = path.resolve(Deno.cwd(), "build", "index.html");
   res.sendFile(indexPath);
 });
 
@@ -90,5 +90,5 @@ app.post('/api/signin', (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 5001;
+const PORT = 5001;
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
